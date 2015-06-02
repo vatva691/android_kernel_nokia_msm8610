@@ -3264,9 +3264,7 @@ irqreturn_t wcd9xxx_dce_handler(int irq, void *data)
 				 __func__);
 			if (mbhc->update_z) {
 				wcd9xxx_update_z(mbhc);
-				dce_z = mbhc->mbhc_data.dce_z;
-				sta_z = mbhc->mbhc_data.sta_z;
-				mbhc->update_z = true;
+				mbhc->update_z = false;
 			}
 			stamv = __wcd9xxx_codec_sta_dce_v(mbhc, 0, sta, sta_z,
 						mbhc->mbhc_data.micb_mv);
@@ -3292,9 +3290,7 @@ irqreturn_t wcd9xxx_dce_handler(int irq, void *data)
 
 	if (mbhc->update_z) {
 		wcd9xxx_update_z(mbhc);
-		dce_z = mbhc->mbhc_data.dce_z;
-		sta_z = mbhc->mbhc_data.sta_z;
-		mbhc->update_z = true;
+		mbhc->update_z = false;
 	}
 
 	stamv = __wcd9xxx_codec_sta_dce_v(mbhc, 0, sta, sta_z,
