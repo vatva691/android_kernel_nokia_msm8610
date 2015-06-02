@@ -350,11 +350,6 @@ static struct voice_data *voice_get_session_by_idx(int idx)
 				NULL : &common.voice[idx]);
 }
 
-static bool is_voice_session(u32 session_id)
-{
-	return (session_id == common.voice[VOC_PATH_PASSIVE].session_id);
-}
-
 static bool is_voip_session(u32 session_id)
 {
 	return (session_id == common.voice[VOC_PATH_FULL].session_id);
@@ -4277,10 +4272,8 @@ int voc_start_playback(uint32_t set, uint16_t port_id)
 		v = voice_get_session(voc_get_session_id(VOICE_SESSION_NAME));
 	else if (port_id == VOICE2_PLAYBACK_TX)
 		v = voice_get_session(voc_get_session_id(VOICE2_SESSION_NAME));
-	else
-		pr_err("%s: Invalid port_id 0x%x", __func__, port_id);
 
-	while (v != NULL) {
+	if (v != NULL) {
 		mutex_lock(&v->lock);
 		v->music_info.port_id = port_id;
 		v->music_info.play_enable = set;
@@ -4300,17 +4293,8 @@ int voc_start_playback(uint32_t set, uint16_t port_id)
 		}
 
 		mutex_unlock(&v->lock);
-
-		/* Voice and VoLTE call use the same pseudo port and hence
-		 * use the same mixer control. So enable incall delivery
-		 * for VoLTE as well with Voice.
-		 */
-		if (is_voice_session(v->session_id)) {
-			v = voice_get_session(voc_get_session_id(
-							VOLTE_SESSION_NAME));
-		} else {
-			break;
-		}
+	} else {
+		pr_err("%s: Invalid port_id 0x%x", __func__, port_id);
 	}
 
 	return ret;
