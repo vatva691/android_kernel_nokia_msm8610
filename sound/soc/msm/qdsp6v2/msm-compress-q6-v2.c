@@ -645,11 +645,7 @@ static int msm_compr_pointer(struct snd_compr_stream *cstream,
 	tstamp.copied_total = prtd->copied_total;
 	spin_unlock_irq(&prtd->lock);
 
-	/*
-	 Query timestamp from DSP if some data is with it.
-	 This prevents timeouts.
-	*/
-	if (prtd->copied_total) {
+	if (atomic_read(&prtd->start)) {
 		rc = q6asm_get_session_time(prtd->audio_client, &timestamp);
 		if (rc < 0) {
 			pr_err("%s: Get Session Time return value =%lld\n",
