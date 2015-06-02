@@ -229,7 +229,6 @@ struct wcd9xxx_mbhc_config {
 	unsigned long cs_enable_flags;
 	bool use_int_rbias;
 	bool do_recalibration;
-	bool use_vddio_meas;
 };
 
 struct wcd9xxx_cfilt_mode {
