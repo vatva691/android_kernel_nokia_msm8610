@@ -14,9 +14,7 @@
 
 /include/ "msm8610-v1.dtsi"
 /include/ "msm8610-mtp.dtsi"
-/include/ "msm8610-camera-sensor-ara.dtsi"
-/include/ "c4_touch.dtsi"
-/include/ "sms_dtv.dtsi"
+/include/ "msm8610-camera-sensor-cdp-mtp.dtsi"
 
 / {
 	model = "Qualcomm MSM 8610 MTP";
