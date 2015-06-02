@@ -2088,11 +2088,8 @@ static void wcd9xxx_mbhc_decide_swch_plug(struct wcd9xxx_mbhc *mbhc)
 	pr_debug("%s: enter\n", __func__);
 
 	WCD9XXX_BCL_ASSERT_LOCKED(mbhc->resmgr);
-
-	current_source_enable = (((mbhc->mbhc_cfg->cs_enable_flags &
-		      (1 << MBHC_CS_ENABLE_INSERTION)) != 0) &&
-		     (!(snd_soc_read(mbhc->codec,
-				     mbhc->mbhc_bias_regs.ctl_reg) & 0x80)));
+	current_source_enable = ((mbhc->mbhc_cfg->cs_enable_flags &
+				  (1 << MBHC_CS_ENABLE_INSERTION)) != 0);
 
 	if (current_source_enable) {
 		wcd9xxx_turn_onoff_current_source(mbhc, true, false);
@@ -2217,10 +2214,9 @@ static bool wcd9xxx_hs_remove_settle(struct wcd9xxx_mbhc *mbhc)
 	unsigned long retry = 0, timeout;
 	bool cs_enable;
 
-	cs_enable = (((mbhc->mbhc_cfg->cs_enable_flags &
-		      (1 << MBHC_CS_ENABLE_REMOVAL)) != 0) &&
-		     (!(snd_soc_read(mbhc->codec,
-				     mbhc->mbhc_bias_regs.ctl_reg) & 0x80)));
+	cs_enable = ((mbhc->mbhc_cfg->cs_enable_flags &
+		      (1 << MBHC_CS_ENABLE_REMOVAL)) != 0);
+
 	if (cs_enable)
 		wcd9xxx_turn_onoff_current_source(mbhc, true, false);
 
@@ -2732,11 +2728,8 @@ static void wcd9xxx_correct_swch_plug(struct work_struct *work)
 
 	mbhc = container_of(work, struct wcd9xxx_mbhc, correct_plug_swch);
 	codec = mbhc->codec;
-
-	current_source_enable = (((mbhc->mbhc_cfg->cs_enable_flags &
-		      (1 << MBHC_CS_ENABLE_POLLING)) != 0) &&
-		     (!(snd_soc_read(codec,
-				     mbhc->mbhc_bias_regs.ctl_reg) & 0x80)));
+	current_source_enable = ((mbhc->mbhc_cfg->cs_enable_flags &
+				  (1 << MBHC_CS_ENABLE_POLLING)) != 0);
 
 	wcd9xxx_onoff_ext_mclk(mbhc, true);
 
