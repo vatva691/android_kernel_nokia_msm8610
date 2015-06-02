@@ -455,12 +455,10 @@ static int msm_compr_free(struct snd_compr_stream *cstream)
 	pr_debug("%s: ocmem_req: %d\n", __func__,
 		atomic_read(&pdata->audio_ocmem_req));
 
-	if (atomic_read(&prtd->eos)) {
-		ret = wait_event_timeout(prtd->eos_wait,
-					 prtd->cmd_ack, 5 * HZ);
-		if (!ret)
-			pr_err("%s: CMD_EOS failed\n", __func__);
-	}
+	ret = wait_event_timeout(prtd->eos_wait,
+				prtd->cmd_ack, 5 * HZ);
+	if (!ret)
+		pr_err("%s: CMD_EOS failed\n", __func__);
 
 	q6asm_cmd(prtd->audio_client, CMD_CLOSE);
 
