@@ -119,8 +119,6 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 	/* calculate valid and active FE <-> BE dpcms */
 	dpcm_process_paths(fe, stream, &list, 1);
 
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
-
 	ret = dpcm_be_dai_startup(fe, stream);
 	if (ret < 0) {
 		/* clean up all links */
@@ -135,8 +133,6 @@ static int soc_compr_open_fe(struct snd_compr_stream *cstream)
 	dpcm_clear_pending_state(fe, stream);
 	dpcm_path_put(&list);
 
-	fe->dpcm[stream].state = SND_SOC_DPCM_STATE_OPEN;
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 	mutex_unlock(&fe->card->mutex);
 
 	return 0;
@@ -148,7 +144,6 @@ machine_err:
 	if (platform->driver->compr_ops && platform->driver->compr_ops->free)
 		platform->driver->compr_ops->free(cstream);
 out:
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 	mutex_unlock(&fe->card->mutex);
 	return ret;
 }
@@ -254,8 +249,6 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 
 	mutex_lock_nested(&fe->card->mutex, SND_SOC_CARD_CLASS_RUNTIME);
 
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
-
 	ret = dpcm_be_dai_hw_free(fe, stream);
 	if (ret < 0)
 		dev_err(fe->dev, "compressed hw_free failed %d\n", ret);
@@ -265,18 +258,6 @@ static int soc_compr_free_fe(struct snd_compr_stream *cstream)
 	/* mark FE's links ready to prune */
 	list_for_each_entry(dpcm, &fe->dpcm[stream].be_clients, list_be)
 		dpcm->state = SND_SOC_DPCM_LINK_STATE_FREE;
-
-	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dpcm_dapm_stream_event(fe, stream,
-				fe->cpu_dai->driver->playback.stream_name,
-				SND_SOC_DAPM_STREAM_STOP);
-	else
-		dpcm_dapm_stream_event(fe, stream,
-				fe->cpu_dai->driver->capture.stream_name,
-				SND_SOC_DAPM_STREAM_STOP);
-
-	fe->dpcm[stream].state = SND_SOC_DPCM_STATE_CLOSE;
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 
 	dpcm_be_disconnect(fe, stream);
 
@@ -345,27 +326,9 @@ static int soc_compr_trigger_fe(struct snd_compr_stream *cstream, int cmd)
 			goto out;
 	}
 
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
-
 	ret = dpcm_be_dai_trigger(fe, stream, cmd);
 
-	switch (cmd) {
-	case SNDRV_PCM_TRIGGER_START:
-	case SNDRV_PCM_TRIGGER_RESUME:
-	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		fe->dpcm[stream].state = SND_SOC_DPCM_STATE_START;
-		break;
-	case SNDRV_PCM_TRIGGER_STOP:
-	case SNDRV_PCM_TRIGGER_SUSPEND:
-		fe->dpcm[stream].state = SND_SOC_DPCM_STATE_STOP;
-		break;
-	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		fe->dpcm[stream].state = SND_SOC_DPCM_STATE_PAUSED;
-		break;
-	}
-
 out:
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 	mutex_unlock(&fe->card->mutex);
 	return ret;
 }
@@ -453,11 +416,9 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 			goto out;
 	}
 
+
 	memcpy(&fe->dpcm[fe_substream->stream].hw_params, params,
 			sizeof(struct snd_pcm_hw_params));
-
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_FE;
-
 	ret = dpcm_be_dai_hw_params(fe, stream);
 	if (ret < 0)
 		goto out;
@@ -466,19 +427,7 @@ static int soc_compr_set_params_fe(struct snd_compr_stream *cstream,
 	if (ret < 0)
 		goto out;
 
-	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dpcm_dapm_stream_event(fe, stream,
-				fe->cpu_dai->driver->playback.stream_name,
-				SND_SOC_DAPM_STREAM_START);
-	else
-		dpcm_dapm_stream_event(fe, stream,
-				fe->cpu_dai->driver->capture.stream_name,
-				SND_SOC_DAPM_STREAM_START);
-
-	fe->dpcm[stream].state = SND_SOC_DPCM_STATE_PREPARE;
-
 out:
-	fe->dpcm[stream].runtime_update = SND_SOC_DPCM_UPDATE_NO;
 	mutex_unlock(&fe->card->mutex);
 	return ret;
 }
