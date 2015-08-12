@@ -1346,6 +1346,7 @@ static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	int __user *ip = argp;
 	int err;
 
+	snd_printk(KERN_WARNING "Cmd: '%s' \n",cmd);
 	ctl = file->private_data;
 	card = ctl->card;
 	if (snd_BUG_ON(!card))
