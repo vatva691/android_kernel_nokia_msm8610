@@ -909,6 +909,8 @@ static int snd_ctl_elem_write_user(struct snd_ctl_file *file,
 	int result;
 
 	control = memdup_user(_control, sizeof(*control));
+	snd_printk(KERN_WARNING "control name = %s \n", control->id.name);
+	snd_printk(KERN_WARNING "control numid = %d \n", control->id.numid);
 	if (IS_ERR(control))
 		return PTR_ERR(control);
 
@@ -1346,45 +1348,61 @@ static long snd_ctl_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 	int __user *ip = argp;
 	int err;
 
-	snd_printk(KERN_WARNING "Cmd: '%s' \n",cmd);
 	ctl = file->private_data;
 	card = ctl->card;
 	if (snd_BUG_ON(!card))
 		return -ENXIO;
 	switch (cmd) {
 	case SNDRV_CTL_IOCTL_PVERSION:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_PVERSION \n");
 		return put_user(SNDRV_CTL_VERSION, ip) ? -EFAULT : 0;
 	case SNDRV_CTL_IOCTL_CARD_INFO:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_CARD_INFO \n");
 		return snd_ctl_card_info(card, ctl, cmd, argp);
 	case SNDRV_CTL_IOCTL_ELEM_LIST:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_LIST \n");
 		return snd_ctl_elem_list(card, argp);
 	case SNDRV_CTL_IOCTL_ELEM_INFO:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_INFO \n");
 		return snd_ctl_elem_info_user(ctl, argp);
 	case SNDRV_CTL_IOCTL_ELEM_READ:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_READ \n");
 		return snd_ctl_elem_read_user(card, argp);
 	case SNDRV_CTL_IOCTL_ELEM_WRITE:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_WRITE \n");
 		return snd_ctl_elem_write_user(ctl, argp);
 	case SNDRV_CTL_IOCTL_ELEM_LOCK:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_LOCK \n");
 		return snd_ctl_elem_lock(ctl, argp);
 	case SNDRV_CTL_IOCTL_ELEM_UNLOCK:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_UNLOCK \n");
 		return snd_ctl_elem_unlock(ctl, argp);
 	case SNDRV_CTL_IOCTL_ELEM_ADD:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_ADD \n");
 		return snd_ctl_elem_add_user(ctl, argp, 0);
 	case SNDRV_CTL_IOCTL_ELEM_REPLACE:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_REPLACE \n");
 		return snd_ctl_elem_add_user(ctl, argp, 1);
 	case SNDRV_CTL_IOCTL_ELEM_REMOVE:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_ELEM_REMOVE \n");
 		return snd_ctl_elem_remove(ctl, argp);
 	case SNDRV_CTL_IOCTL_SUBSCRIBE_EVENTS:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_SUBSCRIBE_EVENTS \n");
 		return snd_ctl_subscribe_events(ctl, ip);
 	case SNDRV_CTL_IOCTL_TLV_READ:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_TLV_READ \n");
 		return snd_ctl_tlv_ioctl(ctl, argp, 0);
 	case SNDRV_CTL_IOCTL_TLV_WRITE:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_TLV_WRITE \n");
 		return snd_ctl_tlv_ioctl(ctl, argp, 1);
 	case SNDRV_CTL_IOCTL_TLV_COMMAND:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_TLV_COMMAND \n");
 		return snd_ctl_tlv_ioctl(ctl, argp, -1);
 	case SNDRV_CTL_IOCTL_POWER:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_TLV_COMMAND \n");
 		return -ENOPROTOOPT;
 	case SNDRV_CTL_IOCTL_POWER_STATE:
+		snd_printk(KERN_WARNING "SNDRV_CTL_IOCTL_POWER_STATE \n");
 #ifdef CONFIG_PM
 		return put_user(card->power_state, ip) ? -EFAULT : 0;
 #else
