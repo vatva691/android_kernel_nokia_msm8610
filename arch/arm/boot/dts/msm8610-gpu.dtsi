@@ -32,13 +32,13 @@
 
 		/* Bus Scale Settings */
 		qcom,msm-bus,name = "grp3d";
-		qcom,msm-bus,num-cases = <4>;
+		qcom,msm-bus,num-cases = <5>;
 		qcom,msm-bus,num-paths = <1>;
 		qcom,msm-bus,vectors-KBps =
 			<26 512 0 0>,
-			<26 512 0 800000>,
-			<26 512 0 1600000>,
-			<26 512 0 2128000>;
+			<26 512 400000  800000>,
+			<26 512 800000  1600000>,
+			<26 512 1332000 2128000>;
 
 		/* GDSC oxili regulators */
 		vdd-supply = <&gdsc_oxili_cx>;
@@ -55,15 +55,15 @@
 
 			qcom,gpu-pwrlevel@0 {
 				reg = <0>;
-				qcom,gpu-freq = <400000000>;
-				qcom,bus-freq = <3>;
+				qcom,gpu-freq = <533000000>;
+				qcom,bus-freq = <4>;
 				qcom,io-fraction = <0>;
 			};
 
 			qcom,gpu-pwrlevel@1 {
 				reg = <1>;
-				qcom,gpu-freq = <300000000>;
-				qcom,bus-freq = <2>;
+				qcom,gpu-freq = <400000000>;
+				qcom,bus-freq = <3>;
 				qcom,io-fraction = <33>;
 			};
 
@@ -125,7 +125,7 @@
 			qcom,energy-leakage-coeff-d = <0>;
 
 			qcom,power-current-temp = <25>;
-			qcom,power-num-freq = <4>;
+			qcom,power-num-freq = <5>;
 
 			qcom,dcvs-freq@0 {
 				reg = <0>;
@@ -156,6 +156,15 @@
 
 			qcom,dcvs-freq@3 {
 				reg = <3>;
+				qcom,freq = <0>;
+				qcom,voltage = <0>;
+				qcom,is_trans_level = <0>;
+				qcom,active-energy-offset = <100>;
+				qcom,leakage-energy-offset = <0>;
+			};
+			
+			qcom,dcvs-freq@4 {
+				reg = <4>;
 				qcom,freq = <0>;
 				qcom,voltage = <0>;
 				qcom,is_trans_level = <0>;
