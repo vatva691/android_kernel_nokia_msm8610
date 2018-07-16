@@ -50,6 +50,8 @@ static struct msm_bus_paths bw_level_tbl_8610[] = {
 	[3] =  BW_MBPS(800), /* At least 100 MHz on bus. */
 	[4] = BW_MBPS(1600), /* At least 200 MHz on bus. */
 	[5] = BW_MBPS(2664), /* At least 333 MHz on bus. */
+	[6] = BW_MBPS(2828), /* At least 353 MHz on bus. */	
+	[7] = BW_MBPS(3003), /* At least 374 MHz on bus. */	
 };
 
 static struct msm_bus_scale_pdata bus_client_pdata = {
@@ -118,6 +120,8 @@ static struct clkctl_acpu_speed acpu_freq_tbl_8610[] = {
 	{ 1,  787200, ACPUPLL, 5, 0,   CPR_CORNER_4, 0, 4 },
 	{ 1,  998400, ACPUPLL, 5, 0,   CPR_CORNER_12,  0, 5 },
 	{ 1, 1190400, ACPUPLL, 5, 0,   CPR_CORNER_12,  0, 5 },
+	{ 1, 1305600, ACPUPLL, 5, 0,   CPR_CORNER_12,  0, 6 },
+	{ 1, 1401600, ACPUPLL, 5, 0,   CPR_CORNER_12,  0, 7 },
 	{ 0 }
 };
 
@@ -135,7 +139,11 @@ static struct acpuclk_drv_data drv_data = {
 	.freq_tbl = acpu_freq_tbl_8226_1p1,
 	.pvs_tables = pvs_tables_8226,
 	.bus_scale = &bus_client_pdata,
-	.vdd_max_cpu = CPR_CORNER_12,
+#ifdef CONFIG_USERSPACE_VOLTAGE_CONTROL
+	.vdd_max_cpu = 1280000,
+#else
+ 	.vdd_max_cpu = CPR_CORNER_12,
+#endif
 	.src_clocks = {
 		[PLL0].name = "gpll0",
 		[ACPUPLL].name = "a7sspll",
